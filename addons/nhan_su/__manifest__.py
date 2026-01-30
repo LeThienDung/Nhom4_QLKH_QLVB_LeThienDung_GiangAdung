@@ -25,25 +25,18 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-
-        # BƯỚC 1: Load các file chứa Action và View cơ bản trước
-        # (Để action_nhan_vien được tạo ra trước)
+        'views/chuc_vu.xml',
+        'views/don_vi.xml',
         'views/nhan_vien.xml',
-        'views/quan_ly_van_ban_views.xml',
-
-        # BƯỚC 2: Load file Menu (Lúc này action đã có, nên menu link vào không bị lỗi)
-        # (File này sẽ tạo ra menu_root)
-        'views/menu.xml',  
-        
-        # BƯỚC 3: Load các file Menu con hoặc View phụ thuộc vào Menu Cha
-        # (File này dùng menu_root nên phải để sau menu.xml)
-        'views/cham_cong_view.xml', 
-
-        'views/tinh_luong_view.xml',
+        'views/cham_cong_views.xml',
+        'views/lich_su_cong_tac.xml',
+        'views/chung_chi_bang_cap.xml',
+        'views/danh_sach_chung_chi_bang_cap.xml',
+        'views/bang_luong.xml',
+        'views/menu.xml',
     ],
-
     # only loaded in demonstration mode
-    # 'demo': [
-    #     'demo/demo.xml',
-    # ],
+    'demo': [
+        'demo/demo.xml',
+    ],
 }

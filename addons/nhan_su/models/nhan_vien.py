@@ -1,39 +1,84 @@
 from odoo import models, fields, api
+from datetime import date
+
 from odoo.exceptions import ValidationError
-import re
 
 class NhanVien(models.Model):
-    _name = 'nhan_vien'  # Giữ nguyên tên model cũ của bạn
+    _name = 'nhan_su.nhan_vien'
     _description = 'Bảng chứa thông tin nhân viên'
-    _rec_name = 'ho_ten' # <--- Thêm: Để khi chọn nhân viên ở bảng chấm công nó hiện Tên chứ không hiện ID
+    _rec_name = 'ho_va_ten'
+    _order = 'ten asc, tuoi desc'
 
-    # Các trường cũ của bạn (Giữ nguyên)
     ma_dinh_danh = fields.Char("Mã định danh", required=True)
+
+    ho_ten_dem = fields.Char("Họ tên đệm", required=True)
+    ten = fields.Char("Tên", required=True)
+    ho_va_ten = fields.Char("Họ và tên", compute="_compute_ho_va_ten", store=True)
+    
     ngay_sinh = fields.Date("Ngày sinh")
     que_quan = fields.Char("Quê quán")
     email = fields.Char("Email")
     so_dien_thoai = fields.Char("Số điện thoại")
-
-    # Các trường CẦN THÊM để tính lương và hiển thị (Thêm mới)
-    ho_ten = fields.Char(string="Họ và tên", required=True) 
-    luong_co_ban = fields.Float(string="Lương cơ bản", default=5000000)
-
-    _sql_constraints = [
-        # Cấu trúc: ('tên_ràng_buộc', 'unique(tên_cột)', 'Thông báo lỗi')
-        ('ma_dinh_danh_uniq', 'unique(ma_dinh_danh)', 'Lỗi: Mã định danh này đã tồn tại! Vui lòng kiểm tra lại.'),
-        ('ho_ten_uniq', 'unique(ho_ten)', 'Cảnh báo: Tên nhân viên này đã có trong hệ thống!')
+    lich_su_cong_tac_ids = fields.One2many(
+        'nhan_su.lich_su_cong_tac',
+        'nhan_vien_id',
+        string='Lịch sử công tác'
+    )
+    tuoi = fields.Integer("Tuổi", compute="_compute_tuoi", store=True)
+    anh = fields.Binary("Ảnh")
+    danh_sach_chung_chi_bang_cap_ids = fields.One2many(
+        'nhan_su.danh_sach_chung_chi_bang_cap',
+        inverse_name="nhan_vien_id", 
+        string = "Danh sách chứng chỉ bằng cấp")
+    so_nguoi_bang_tuoi = fields.Integer(
+    compute="_compute_so_nguoi_bang_tuoi",
+    store=True
+)
+    luong_co_ban = fields.Float(
+        string='Lương cơ bản',
+        required=True
+    )
+    
+    @api.depends("tuoi")
+    def _compute_so_nguoi_bang_tuoi(self):
+        for record in self:
+            if record.tuoi:
+                records = self.env['nhan_su.nhan_vien'].search(
+                    [
+                        ('tuoi', '=', record.tuoi), 
+                        ('ma_dinh_danh', '!=', record.ma_dinh_danh)
+                    ]
+                )
+                record.so_nguoi_bang_tuoi = len(records)
+    _sql_constrains = [
+        ('ma_dinh_danh_unique', 'unique(ma_dinh_danh)', 'Mã định danh phải là duy nhất')
     ]
 
-    @api.constrains('email')
-    def _check_email(self):
-        for rec in self:
-            if rec.email:
-                match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', rec.email)
-                if match == None:
-                    raise ValidationError('Email không đúng định dạng! (Ví dụ đúng: ten@gmail.com)')
+    @api.depends("ho_ten_dem", "ten")
+    def _compute_ho_va_ten(self):
+        for record in self:
+            if record.ho_ten_dem and record.ten:
+                record.ho_va_ten = record.ho_ten_dem + ' ' + record.ten
+    
+    
+    
+                
+    @api.onchange("ten", "ho_ten_dem")
+    def _default_ma_dinh_danh(self):
+        for record in self:
+            if record.ho_ten_dem and record.ten:
+                chu_cai_dau = ''.join([tu[0][0] for tu in record.ho_ten_dem.lower().split()])
+                record.ma_dinh_danh = record.ten.lower() + chu_cai_dau
+    
+    @api.depends("ngay_sinh")
+    def _compute_tuoi(self):
+        for record in self:
+            if record.ngay_sinh:
+                year_now = date.today().year
+                record.tuoi = year_now - record.ngay_sinh.year
 
-    @api.constrains('so_dien_thoai')
-    def _check_sdt(self):
-        for rec in self:
-            if rec.so_dien_thoai and not rec.so_dien_thoai.isdigit():
-                raise ValidationError('Số điện thoại chỉ được chứa các chữ số!')
+    @api.constrains('tuoi')
+    def _check_tuoi(self):
+        for record in self:
+            if record.tuoi < 18:
+                raise ValidationError("Tuổi không được bé hơn 18")

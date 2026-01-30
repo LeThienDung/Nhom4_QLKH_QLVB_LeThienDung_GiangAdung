@@ -1,16 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+
+        <!-- ROOT MENU (APP) -->
         <menuitem
             id="menu_root"
-            name="QLNS"
-            sequence="0"/>
-          
-        <menuitem name="Quản lý nhân viên" 
-            id="menu_nhan_vien" 
-            parent="menu_root" 
+            name="Quản lý nhân sự"
+            sequence="10"
+        />
+
+        <!-- NHÂN VIÊN -->
+        <menuitem
+            id="menu_nhan_vien"
+            name="Nhân viên"
+            parent="menu_root"
             sequence="1"
             action="action_nhan_vien"
         />
+
+        <!-- DANH MỤC CHUNG -->
+        <menuitem
+            id="menu_danh_muc_chung"
+            name="Danh mục chung"
+            parent="menu_root"
+            sequence="2"
+        />
+
+        <menuitem
+            id="menu_don_vi"
+            name="Đơn vị"
+            parent="menu_danh_muc_chung"
+            sequence="1"
+            action="action_don_vi"
+        />
+
+        <menuitem
+            id="menu_cham_cong_don_vi"
+            name="Đơn vị chấm công"
+            parent="menu_danh_muc_chung"
+            sequence="2"
+            action="action_cham_cong"
+        />
+
+        <menuitem
+            id="menu_chuc_vu"
+            name="Chức vụ"
+            parent="menu_danh_muc_chung"
+            sequence="3"
+            action="action_chuc_vu"
+        />
+
+        <menuitem
+            id="menu_chung_chi_bang_cap"
+            name="Chứng chỉ, bằng cấp"
+            parent="menu_danh_muc_chung"
+            sequence="4"
+            action="action_chung_chi_bang_cap"
+        />
+
+        <!-- LỊCH SỬ CÔNG TÁC -->
+        <menuitem
+            id="menu_lich_su_cong_tac"
+            name="Lịch sử công tác"
+            parent="menu_root"
+            sequence="3"
+            action="action_lich_su_cong_tac"
+        />
+
+        <!-- BẢNG LƯƠNG -->
+        <menuitem
+            id="menu_bang_luong"
+            name="Bảng lương"
+            parent="menu_root"
+            sequence="4"
+            action="action_bang_luong"
+        />
+
+        <!-- CHẤM CÔNG -->
+        <menuitem
+            id="menu_cham_cong_root"
+            name="Chấm công"
+            parent="menu_root"
+            sequence="5"
+            action="action_cham_cong"
+        />
+
     </data>
 </odoo>

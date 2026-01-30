@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- TREE VIEW -->
+        <record id="view_bang_luong_tree" model="ir.ui.view">
+            <field name="name">nhan_su.bang_luong.tree</field>
+            <field name="model">nhan_su.bang_luong</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="nhan_vien_id"/>
+                    <field name="thang"/>
+                    <field name="nam"/>
+                    <field name="so_cong"/>
+                    <field name="tong_ot"/>
+                    <field name="tong_luong"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- FORM VIEW -->
+        <record id="view_bang_luong_form" model="ir.ui.view">
+            <field name="name">nhan_su.bang_luong.form</field>
+            <field name="model">nhan_su.bang_luong</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+
+                        <group string="Thông tin nhân viên">
+                            <field name="nhan_vien_id"/>
+                            <field name="thang"/>
+                            <field name="nam"/>
+                        </group>
+
+                        <!-- ⚠️ & phải viết là &amp; -->
+                        <group string="Công &amp; lương">
+                            <field name="luong_ngay" readonly="1"/>
+                            <field name="so_cong"/>
+                            <field name="tong_ot"/>
+                        </group>
+
+                        <group string="Phụ cấp / Thưởng phạt">
+                            <field name="phu_cap"/>
+                            <field name="thuong_phat"/>
+                        </group>
+
+                        <group string="Tổng kết">
+                            <field name="tong_luong" readonly="1"/>
+                        </group>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- ACTION -->
+        <record id="action_bang_luong" model="ir.actions.act_window">
+            <field name="name">Bảng lương</field>
+            <field name="res_model">nhan_su.bang_luong</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>
