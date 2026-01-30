@@ -17,7 +17,12 @@ class KhachHang(models.Model):
     birthday = fields.Date(string='Ngày sinh', required=True)
 
 
-    ho_tro_ids = fields.One2many('ho_tro_khach_hang', 'nguoi_tao', string='Hỗ trợ khách hàng')
+    ho_tro_ids = fields.One2many(
+    'ho_tro_khach_hang',
+    'khach_hang_id',
+    string='Hỗ trợ khách hàng'
+    )
+
     khach_hang_tiem_nang_ids = fields.One2many('khach_hang_tiem_nang', 'khach_hang_id', string='Khách hàng tiềm năng')
 
     @api.depends('first_name', 'last_name')
@@ -51,15 +56,14 @@ class KhachHang(models.Model):
 
     @api.constrains('first_name', 'last_name')
     def _check_name(self):
-        """Kiểm tra tên không chứa ký tự đặc biệt và không quá ngắn."""
-        name_regex = r'^[\p{L}\s]+$'  # Chỉ chấp nhận chữ cái & khoảng trắng (Unicode)
         for record in self:
-            first_name_clean = record.first_name.strip()
-            last_name_clean = record.last_name.strip()
+            first_name_clean = (record.first_name or "").strip()
+            last_name_clean = (record.last_name or "").strip()
 
             if len(first_name_clean) < 2 or len(last_name_clean) < 2:
                 raise ValidationError("Tên và họ không hợp lệ! Phải có ít nhất 2 ký tự.")
 
-            if not re.match(name_regex, first_name_clean) or not re.match(name_regex, last_name_clean):
+            if not first_name_clean.replace(" ", "").isalpha() or not last_name_clean.replace(" ", "").isalpha():
                 raise ValidationError("Tên không được chứa ký tự đặc biệt hoặc số!")
+
 

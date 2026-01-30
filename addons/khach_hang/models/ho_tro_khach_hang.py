@@ -22,11 +22,18 @@ class HoTroKhachHang(models.Model):
 
     ngay_tao = fields.Datetime('Ngày tạo', default=fields.Datetime.now)
     ngay_giai_quyet = fields.Datetime('Ngày giải quyết')
-    nguoi_tao = fields.Many2one('khach_hang', 'Người tạo', inverse_name='ho_tro_ids')
+    khach_hang_id = fields.Many2one(
+    'khach_hang',
+    string='Khách hàng',
+    required=True,
+    ondelete='cascade'
+)
 
-    phan_cong_cong_viec_ids = fields.One2many('phan_cong_cong_viec', 'ho_tro_khach_hang_id',
-                                              string='Phân công công việc')
-
+    phan_cong_cong_viec_ids = fields.One2many(
+        'phan_cong_cong_viec',
+        'ho_tro_khach_hang_id',
+        string='Phân công công việc'
+    )
     @api.constrains('chu_de')
     def _check_chu_de(self):
         """Kiểm tra chủ đề phải có ít nhất 3 ký tự."""
@@ -55,3 +62,4 @@ class HoTroKhachHang(models.Model):
         for record in self:
             if record.trang_thai not in valid_status:
                 raise ValidationError(_("Trạng thái hỗ trợ khách hàng không hợp lệ!"))
+    

@@ -24,11 +24,18 @@ class PhanCongCongViec(models.Model):
             if record.ngay_phan_cong and record.ngay_phan_cong > date.today():
                 raise ValidationError(_("Ngày phân công không thể lớn hơn ngày hiện tại!"))
 
+    # @api.constrains('hoat_dong_id', 'ho_tro_khach_hang_id')
+    # def _check_hoat_dong_or_ho_tro(self):
+    #     """Chỉ được phân công cho một trong hai: Hoạt động hoặc Hỗ trợ khách hàng."""
+    #     for record in self:
+    #         if record.hoat_dong_id and record.ho_tro_khach_hang_id:
+    #             raise ValidationError(_("Công việc chỉ có thể được phân công cho một Hoạt động hoặc một Hỗ trợ khách hàng, không thể cả hai!"))
+    #         if not record.hoat_dong_id and not record.ho_tro_khach_hang_id:
+    #             raise ValidationError(_("Công việc phải được gán cho Hoạt động hoặc Hỗ trợ khách hàng!"))
     @api.constrains('hoat_dong_id', 'ho_tro_khach_hang_id')
     def _check_hoat_dong_or_ho_tro(self):
-        """Chỉ được phân công cho một trong hai: Hoạt động hoặc Hỗ trợ khách hàng."""
         for record in self:
+            if not record.id:
+                continue
             if record.hoat_dong_id and record.ho_tro_khach_hang_id:
-                raise ValidationError(_("Công việc chỉ có thể được phân công cho một Hoạt động hoặc một Hỗ trợ khách hàng, không thể cả hai!"))
-            if not record.hoat_dong_id and not record.ho_tro_khach_hang_id:
-                raise ValidationError(_("Công việc phải được gán cho Hoạt động hoặc Hỗ trợ khách hàng!"))
+                raise ValidationError(_("Chỉ được gán cho Hoạt động hoặc Hỗ trợ KH"))
